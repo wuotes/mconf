@@ -1,7 +1,7 @@
 # mconf
 A Python module that can handle multiple TOML configuration files.
 
-[![wuotes](https://circleci.com/gh/wuotes/mconf.svg?style=shield)](https://app.circleci.com/pipelines/github/wuotes/mconf)
+[![mconf](https://circleci.com/gh/wuotes/mconf.svg?style=shield)](https://app.circleci.com/pipelines/github/wuotes/mconf) [![mconf](https://www.codefactor.io/repository/github/wuotes/mconf/badge?style=plastic)](https://www.codefactor.io/repository/github/wuotes/mconf/)
 
 ```
 from mconf import mconf
