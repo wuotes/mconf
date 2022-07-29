@@ -39,7 +39,10 @@ class mconf:
     ###################################################################
     def __init__(self: r'mconf', directory: str = r'./') -> None:
         mconf.mutex.acquire()
-        mconf.dir = directory
+
+        if r'./' != directory:
+            mconf.dir = directory
+
         mconf.mutex.release()
 
     ###################################################################
