@@ -95,3 +95,17 @@ def test_bad_save_load_get_class() -> None:
     assert self.save(r'testconf', force_overwrite=True) is True
     assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'badval') is None
+
+def test_bad_workaround_save_load_get_class() -> None:
+    self.mutex.acquire()
+
+    for file in self.files:
+        if r'testconf' == str(file[r'filename']).lower():
+            file[r'data'][r'badval'] = mconf()
+
+    self.mutex.release()
+
+    assert self.save(r'testconf', force_overwrite=True) is False
+    assert self.save_all(force_overwrite=True) is False
+    assert self.load(r'testconf', force_reload=True) is True
+    assert self.get(r'testconf', r'badval') is None

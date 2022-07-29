@@ -30,7 +30,7 @@ class mconf:
     ###################################################################
     #     CLASS VARIABLES                                             #
     ###################################################################
-    files: list = []
+    files: list = []  # { 'filename': str, 'unsaved_changes': bool, 'data': dict }
     dir: str = r'./'
     mutex: Type[Lock] = Lock()
 
