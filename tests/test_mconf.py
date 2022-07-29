@@ -33,6 +33,12 @@ def test_forced_reload() -> None:
 def test_fake_load() -> None:
     assert self.load(r'fakeconf') is False
 
+def test_bad_load() -> None:
+    assert self.load(r'badconf') is False
+
+def test_if_bad_is_loaded() -> None:
+    assert self.is_loaded(r'badconf') is False
+
 def test_if_fake_is_loaded() -> None:
     assert self.is_loaded(r'fakeconf') is False
 
@@ -74,12 +80,18 @@ def test_get_fake() -> None:
 
 def test_verify_save_load_get_bool() -> None:
     assert self.save(r'testconf') is True
-    assert self.load(r'testconf', force_reload=True)
+    assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'testval') is True
 
 def test_verify_save_load_get_str() -> None:
     assert self.set(r'testconf', r'testval', r'test') is True
     assert self.get(r'testconf', r'testval') == r'test'
-    assert self.save(r'testconf')
-    assert self.load(r'testconf', force_reload=True)
+    assert self.save(r'testconf') is True
+    assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'testval') == r'test'
+
+def test_bad_save_load_get_class() -> None:
+    assert self.set(r'testconf', r'badval', mconf()) is False
+    assert self.save(r'testconf', force_overwrite=True) is True
+    assert self.load(r'testconf', force_reload=True) is True
+    assert self.get(r'testconf', r'badval') is None
