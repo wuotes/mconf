@@ -105,3 +105,19 @@ def test_bad_workaround_save_load_get_class() -> None:
     assert self.save_all(force_overwrite=True) is False
     assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'badval') is None
+
+def test_reloaded_bad_conf() -> None:
+    assert self.load(r'reloadedconf') is True
+    assert self.get(r'reloadedconf', r'val1') is True
+
+    with open(self.dir + r'reloadedconf.toml', r'w') as toml_file:
+        toml_file.write('val1 = 1.4.6.\nval2 = "bad\n\nval3=')
+
+    assert self.load(r'reloadedconf', force_reload=True) is False
+    assert self.get(r'reloadedconf', r'val1') is True
+
+    with open(self.dir + r'reloadedconf.toml', r'w') as toml_file:
+        toml_file.write('val1 = true\n')
+
+    assert self.load(r'reloadedconf', force_reload=True) is True
+    assert self.get(r'reloadedconf', r'val1') is True
