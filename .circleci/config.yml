@@ -17,7 +17,7 @@ jobs:
 
       - run:
           name: RUN TESTS AND COLLECT COVERAGE
-          command: pytest --cov app
+          command: pytest --cov
 
       - codecov/upload
 
