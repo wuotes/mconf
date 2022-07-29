@@ -121,3 +121,12 @@ def test_reloaded_bad_conf() -> None:
 
     assert self.load(r'reloadedconf', force_reload=True) is True
     assert self.get(r'reloadedconf', r'val1') is True
+
+def test_bad_directory_save() -> None:
+    old_dir = self.dir
+    self.dir = r'./#@^&$%*^(&//!~/'
+
+    assert self.save(r'testconf', force_overwrite=True) is False
+    assert self.save_all(force_overwrite=True) is False
+
+    self.dir = old_dir
