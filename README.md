@@ -4,11 +4,11 @@ Manage multiple TOML configurations from a single module.
 [![codefactor](https://www.codefactor.io/repository/github/wuotes/mconf/badge?style=plastic)](https://www.codefactor.io/repository/github/wuotes/mconf/) [![circleci](https://circleci.com/gh/wuotes/mconf.svg?style=shield)](https://app.circleci.com/pipelines/github/wuotes/mconf) [![codecov](https://codecov.io/gh/wuotes/mconf/branch/main/graph/badge.svg)](https://codecov.io/gh/wuotes/mconf) 
 
 ```
-from mconf import mconf
+from mconf import mtoml
 
 class pets(mconf):
     def __init__(self):
-        mconf.__init__('.\PATH_TO_CONFIGS\')  # set the relative path to the config directory, defaults to the current directory
+        mtoml.__init__('.\PATH_TO_CONFIGS\')  # set the relative path to the config directory, defaults to the current directory
 
         if not self.is_loaded('dogs'):  # all instances share the same files
             self.load('dogs')  # load a config file named "dogs.toml"
