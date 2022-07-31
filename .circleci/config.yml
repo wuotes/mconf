@@ -1,6 +1,6 @@
 version: 2.1
 
-orbs: 
+orbs:
   codecov: codecov/codecov@3.2.3
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
 
       - run:
           name: RUN TESTS AND COLLECT COVERAGE
-          command: pytest --cov=src
+          command: pytest --cov=mconf
 
       - codecov/upload
 

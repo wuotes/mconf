@@ -26,7 +26,7 @@ import tomli_w
 #         CONFIG                                                      #
 #                                                                     #
 #######################################################################
-class mconf:
+class mtoml:
     ###################################################################
     #     CLASS VARIABLES                                             #
     ###################################################################
@@ -37,26 +37,26 @@ class mconf:
     ###################################################################
     #     CONSTRUCTOR, INSTANCE VARIABLES                             #
     ###################################################################
-    def __init__(self: r'mconf', directory: str = r'./') -> None:
-        mconf.mutex.acquire()
+    def __init__(self: r'mtoml', directory: str = r'./') -> None:
+        mtoml.mutex.acquire()
 
         if r'./' != directory:
-            mconf.dir = directory
+            mtoml.dir = directory
 
-        mconf.mutex.release()
+        mtoml.mutex.release()
 
     ###################################################################
     #     LOAD                                                        #
     ###################################################################
-    def load(self: r'mconf', filename: str, force_reload: bool = False) -> bool:
+    def load(self: r'mtoml', filename: str, force_reload: bool = False) -> bool:
         file_data: dict = None
 
-        mconf.mutex.acquire()
+        mtoml.mutex.acquire()
 
-        for file in mconf.files:
+        for file in mtoml.files:
             if filename.lower() == str(file[r'filename']):
                 if force_reload is False:
-                    mconf.mutex.release()
+                    mtoml.mutex.release()
 
                     print('[{0}] Configuration \'{1}\' failed to load due to previous unsaved changes. (force_reload: False)'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
 
@@ -70,7 +70,7 @@ class mconf:
                     print('[{0}] An exception was thrown while attempting to reload the configuration \'{1}\': {2}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, str(toml_exception)), file=stderr)
 
                 if file_data is None:
-                    mconf.mutex.release()
+                    mtoml.mutex.release()
 
                     print('[{0}] The configuration \'{1}\' failed to load.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
 
@@ -79,7 +79,7 @@ class mconf:
                 file[r'data'] = file_data
                 file[r'unsaved_changes'] = False
 
-                mconf.mutex.release()
+                mtoml.mutex.release()
 
                 print('[{0}] Configuration \'{1}\' loaded successfully.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
 
@@ -93,7 +93,7 @@ class mconf:
             print('[{0}] An exception was thrown while attempting to load the configuration \'{1}\': {2}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, str(toml_exception)), file=stderr)
 
         if file_data is None:
-            mconf.mutex.release()
+            mtoml.mutex.release()
 
             print('[{0}] The configuration \'{1}\' failed to load.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
 
@@ -105,8 +105,8 @@ class mconf:
             r'data': file_data,
         }
 
-        mconf.files.append(file_header)
-        mconf.mutex.release()
+        mtoml.files.append(file_header)
+        mtoml.mutex.release()
 
         print('[{0}] Configuration \'{1}\' loaded successfully.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
 
@@ -115,31 +115,31 @@ class mconf:
     ###################################################################
     #     IS_LOADED                                                   #
     ###################################################################
-    def is_loaded(self: r'mconf', filename: str) -> bool:
-        mconf.mutex.acquire()
+    def is_loaded(self: r'mtoml', filename: str) -> bool:
+        mtoml.mutex.acquire()
 
-        for file in mconf.files:
+        for file in mtoml.files:
             if filename.lower() == str(file[r'filename']):
-                mconf.mutex.release()
+                mtoml.mutex.release()
 
                 return True
 
-        mconf.mutex.release()
+        mtoml.mutex.release()
 
         return False
 
     ###################################################################
     #     SAVE                                                        #
     ###################################################################
-    def save(self: r'mconf', filename: str, force_overwrite: bool = False) -> bool:
+    def save(self: r'mtoml', filename: str, force_overwrite: bool = False) -> bool:
         is_valid_toml: bool = True
 
-        mconf.mutex.acquire()
+        mtoml.mutex.acquire()
 
-        for file in mconf.files:
+        for file in mtoml.files:
             if filename.lower() == str(file[r'filename']):
                 if force_overwrite is False and file[r'unsaved_changes'] is False:
-                    mconf.mutex.release()
+                    mtoml.mutex.release()
 
                     return False
 
@@ -152,7 +152,7 @@ class mconf:
                     print('[{0}] An exception was thrown while preparing to save the configuration \'{1}\': {2}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, str(toml_exception)), file=stderr)
 
                 if is_valid_toml is False:
-                    mconf.mutex.release()
+                    mtoml.mutex.release()
 
                     return False
 
@@ -167,14 +167,14 @@ class mconf:
 
                     print('[{0}] An exception was thrown while saving the configuration \'{1}\': {2}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, str(toml_exception)), file=stderr)
 
-                mconf.mutex.release()
+                mtoml.mutex.release()
 
                 if is_valid_toml is False:
                     return False
 
                 return True
 
-        mconf.mutex.release()
+        mtoml.mutex.release()
 
         print('[{0}] The configuration \'{1}\' does not exist.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename))
 
@@ -183,12 +183,12 @@ class mconf:
     ###################################################################
     #     SAVE_ALL                                                    #
     ###################################################################
-    def save_all(self: r'mconf', force_overwrite: bool = False) -> bool:
+    def save_all(self: r'mtoml', force_overwrite: bool = False) -> bool:
         saved_all: bool = True
 
-        mconf.mutex.acquire()
+        mtoml.mutex.acquire()
 
-        for file in mconf.files:
+        for file in mtoml.files:
             if force_overwrite is False and file[r'unsaved_changes'] is False:
                 saved_all = False
                 
@@ -219,38 +219,38 @@ class mconf:
 
                 print('[{0}] An exception was thrown while saving the configuration \'{1}\': {2}'.format(datetime.now().strftime('%m/%d %I:%M %p'), str(file[r'filename']), str(toml_exception)), file=stderr)
 
-        mconf.mutex.release()
+        mtoml.mutex.release()
 
         return saved_all
 
     ###################################################################
     #     GET                                                         #
     ###################################################################
-    def get(self: r'mconf', filename: str, field: str) -> Any:
-        mconf.mutex.acquire()
+    def get(self: r'mtoml', filename: str, field: str) -> Any:
+        mtoml.mutex.acquire()
 
-        for file in mconf.files:
+        for file in mtoml.files:
             if filename.lower() == str(file[r'filename']):
                 if field in file[r'data'].keys():
                     value = file[r'data'][field]
 
-                    mconf.mutex.release()
+                    mtoml.mutex.release()
 
                     return value
 
-        mconf.mutex.release()
+        mtoml.mutex.release()
 
         return None
 
     ###################################################################
     #     SET                                                         #
     ###################################################################
-    def set(self: r'mconf', filename: str, field: str, value: Any) -> bool:
+    def set(self: r'mtoml', filename: str, field: str, value: Any) -> bool:
         is_valid_toml: bool = True
 
-        mconf.mutex.acquire()
+        mtoml.mutex.acquire()
 
-        for file in mconf.files:
+        for file in mtoml.files:
             if filename.lower() == str(file[r'filename']):
                 try:
                     toml_copy = copy.deepcopy(file[r'data'])
@@ -262,16 +262,16 @@ class mconf:
                     file[r'unsaved_changes'] = True
                     file[r'data'] = toml_copy
 
-                except:
+                except Exception as toml_exception:
                     is_valid_toml = False
 
-                    print('[{0}] The configuration \'{1}\' and field \'{2}\' attempted value set resulted in an invalid TOML format.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, field), file=stderr)
+                    print('[{0}] The configuration \'{1}\' and field \'{2}\' attempted value set resulted in an invalid TOML format: {3}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, field, str(toml_exception)), file=stderr)
 
-                mconf.mutex.release()
+                mtoml.mutex.release()
 
                 return is_valid_toml
 
-        mconf.mutex.release()
+        mtoml.mutex.release()
 
         print('[{0}] The configuration \'{1}\' does not exist.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
 

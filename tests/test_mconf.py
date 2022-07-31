@@ -11,15 +11,18 @@
 #         IMPORTS                                                     #
 #                                                                     #
 #######################################################################
-import sys; sys.path.append(r'./src')
-from mconf import mconf
+import sys
+
+sys.path.append(r'./mconf')
+
+from mconf import mtoml
 
 #######################################################################
 #                                                                     #
 #         TESTS                                                       #
 #                                                                     #
 #######################################################################
-self = mconf(r'./tests/')
+self = mtoml(r'./tests/')
 
 def test_normal_load() -> None:
     assert self.load(r'testconf') is True
@@ -91,7 +94,7 @@ def test_verify_save_load_get_str() -> None:
     assert self.get(r'testconf', r'testval') == r'test'
 
 def test_bad_save_load_get_class() -> None:
-    assert self.set(r'testconf', r'badval', mconf()) is False
+    assert self.set(r'testconf', r'badval', mtoml()) is False
     assert self.save(r'testconf', force_overwrite=True) is True
     assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'badval') is None
@@ -99,7 +102,7 @@ def test_bad_save_load_get_class() -> None:
 def test_bad_workaround_save_load_get_class() -> None:
     for file in self.files:
         if r'testconf' == str(file[r'filename']).lower():
-            file[r'data'][r'badval'] = mconf()
+            file[r'data'][r'badval'] = mtoml()
 
     assert self.save(r'testconf', force_overwrite=True) is False
     assert self.save_all(force_overwrite=True) is False
