@@ -1,12 +1,12 @@
-# mconf
+# mtoml
 Manage multiple TOML configurations from a single module.
 
-`pip install mconf`
+`pip install mtoml`
 
-[![codefactor](https://www.codefactor.io/repository/github/wuotes/mconf/badge?style=plastic)](https://www.codefactor.io/repository/github/wuotes/mconf/) [![circleci](https://circleci.com/gh/wuotes/mconf.svg?style=shield)](https://app.circleci.com/pipelines/github/wuotes/mconf) [![codecov](https://codecov.io/gh/wuotes/mconf/branch/main/graph/badge.svg)](https://codecov.io/gh/wuotes/mconf) 
+[![codefactor](https://www.codefactor.io/repository/github/wuotes/mtoml/badge?style=plastic)](https://www.codefactor.io/repository/github/wuotes/mtoml/) [![circleci](https://circleci.com/gh/wuotes/mtoml.svg?style=shield)](https://app.circleci.com/pipelines/github/wuotes/mtoml) [![codecov](https://codecov.io/gh/wuotes/mtoml/branch/main/graph/badge.svg)](https://codecov.io/gh/wuotes/mtoml) 
 
 ```
-from mconf import mtoml
+from mtoml import mtoml
 
 class pets(mtoml):
     def __init__(self):

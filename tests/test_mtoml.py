@@ -13,9 +13,9 @@
 #######################################################################
 import sys
 
-sys.path.append(r'./mconf')
+sys.path.append(r'./mtoml')
 
-from mconf import mtoml
+from mtoml import mtoml
 
 #######################################################################
 #                                                                     #
