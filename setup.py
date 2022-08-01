@@ -8,7 +8,7 @@ setup(
     author='Jordan Schaffrin',
     author_email='mailbox@xrtuen.com',
     license='Mozilla Public License 2.0',
-    python_requires='>=3.9'
+    python_requires='>=3.9',
     packages=['mconf'],
     install_requires=['tomli>=2.0.1',
                       'tomli_w>=1.0.0',                     
