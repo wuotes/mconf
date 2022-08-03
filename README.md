@@ -1,32 +1,66 @@
 # mtoml
-Manage multiple TOML configurations from a single module.
+Manage multiple TOML configurations from a single thread-safe module.
 
 `pip install mtoml`
 
 [![codefactor](https://www.codefactor.io/repository/github/wuotes/mtoml/badge?style=plastic)](https://www.codefactor.io/repository/github/wuotes/mtoml/) [![circleci](https://circleci.com/gh/wuotes/mtoml.svg?style=shield)](https://app.circleci.com/pipelines/github/wuotes/mtoml) [![codecov](https://codecov.io/gh/wuotes/mtoml/branch/main/graph/badge.svg)](https://codecov.io/gh/wuotes/mtoml) 
 
 ```
-from mtoml import mtoml
+from sys import stderr
 
-class pets(mtoml):
+import mtoml
+
+class pets(mtoml.mtomlc):
     def __init__(self):
-        mtoml.__init__('.\PATH_TO_CONFIGS\')  # set the relative path to the config directory, defaults to the current directory or a previously set directory
+        # set the relative path to the config directory
+        # if not specified, defaults to the current directory
+        # unless a directory was set prior to this class init
+        mtoml.mtomlc.__init__('.\PATH_TO_CONFIGS\')
 
-        if not self.is_loaded('dogs'):  # all instances share the same files
-            self.load('dogs')  # load a config file named "dogs.toml"
+        # mtomlc does not need to be inherited and may be an instance var
+        self.conf = mtoml.mtomlc('\PATH_TO_CONFIGS\')
 
-        if not self.is_loaded('cats'):
-            self.load('cats')  # load a config file named "cats.toml"
+        # mtoml methods may be accessed through any instance
+        self.conf.set_dir('\PATH_TO_CONFIGS\')
+        self.set_dir('.\PATH_TO_CONFIGS\')
 
-        # this module should not throw any exceptions, if a method fails it returns either False or None.
+        # or directly through the module itself
+        mtoml.set_dir('.\PATH_TO_CONFIGS\')
 
-        self.conf = mtoml('.\PATH_TO_CONFIGS\')  # this is also valid; self.conf.load(), self.conf.is_loaded(), etc
+        # all instances share the same files
+        if mtoml.is_loaded('dogs') is False:
+            # load a toml config named "dogs.toml"
+            if mtoml.load('dogs') is False:
+                # if something goes wrong mtoml won't throw exceptions
+                # and instead returns either None or False
+                print('Unable to load config "dogs"!', file=stderr)
 
     def __del__(self):
-        self.save_all()  # save all loaded configs
+        # not a good idea to put this here in practice
+        # but this is "save all changes before exit"
+        mtoml.save_all()
 
-    def add_new_dog_breed(self, breed):
-        dog_breeds = self.get('dogs', 'breeds')  # gets the current list of dog breeds
-        dog_breeds.append(breed)                 # we are assuming it returned a list for brevity but if 'get' fails it returns None
-        self.set('dogs', 'breeds', dog_breeds)   # sets the variable 'breeds' in the config 'dogs' to our new list
+        # where as this is would force a full write
+        # to save eveything even if nothing changed
+        mtoml.save_all(force_overwrite=True)
+
+    def add_dog_breed(self, breed):
+        # get the current list of dog breeds that we are
+        # assuming is a list in this case
+        breeds = mtoml.get('dogs', 'breeds')
+        breeds.append(breed)
+
+        # update the config with our new list
+        mtoml.set('dogs', 'breeds', breeds)
+
+        # any attempt to call get('dogs', 'breeds')
+        # will return our updated list but those updates
+        # haven't been saved yet, we need explicitly save
+        mtoml.save('dogs')
+
+        # now even if another app wants to access
+        # our toml config about dogs it will show
+        # the updated list, otherwise our new list
+        # would not be saved until the class instance
+        # is cleaned up through __del__()
 ```

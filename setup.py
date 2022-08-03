@@ -18,7 +18,7 @@ def read_file(filename: str) -> str:
 
 setup(
     name=r'mtoml',
-    version=r'1.0.0',    
+    version=r'1.1.0',    
     description=r'Manage multiple TOML configurations from a single module.',
     long_description=read_file(r'./README.md'),
     long_description_content_type=r'text/markdown',

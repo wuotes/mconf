@@ -15,14 +15,14 @@ import sys
 
 sys.path.append(r'./mtoml')
 
-from mtoml import mtoml
+import mtoml
 
 #######################################################################
 #                                                                     #
 #         TESTS                                                       #
 #                                                                     #
 #######################################################################
-self = mtoml(r'./tests/')
+self = mtoml.mtomlc(r'./tests/')
 
 def test_normal_load() -> None:
     assert self.load(r'testconf') is True
@@ -94,15 +94,15 @@ def test_verify_save_load_get_str() -> None:
     assert self.get(r'testconf', r'testval') == r'test'
 
 def test_bad_save_load_get_class() -> None:
-    assert self.set(r'testconf', r'badval', mtoml()) is False
+    assert self.set(r'testconf', r'badval', mtoml.mtomlc()) is False
     assert self.save(r'testconf', force_overwrite=True) is True
     assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'badval') is None
 
 def test_bad_workaround_save_load_get_class() -> None:
-    for file in self.files:
+    for file in mtoml.mtomlc._files:
         if r'testconf' == str(file[r'filename']).lower():
-            file[r'data'][r'badval'] = mtoml()
+            file[r'data'][r'badval'] = mtoml.mtomlc()
 
     assert self.save(r'testconf', force_overwrite=True) is False
     assert self.save_all(force_overwrite=True) is False
@@ -113,23 +113,30 @@ def test_reloaded_bad_conf() -> None:
     assert self.load(r'reloadedconf') is True
     assert self.get(r'reloadedconf', r'val1') is True
 
-    with open(self.dir + r'reloadedconf.toml', r'w') as toml_file:
+    with open(self.get_dir() + r'reloadedconf.toml', r'w') as toml_file:
         toml_file.write('val1 = 1.4.6.\nval2 = "bad\n\nval3=')
 
     assert self.load(r'reloadedconf', force_reload=True) is False
     assert self.get(r'reloadedconf', r'val1') is True
 
-    with open(self.dir + r'reloadedconf.toml', r'w') as toml_file:
+    with open(self.get_dir() + r'reloadedconf.toml', r'w') as toml_file:
         toml_file.write('val1 = true\n')
 
     assert self.load(r'reloadedconf', force_reload=True) is True
     assert self.get(r'reloadedconf', r'val1') is True
 
 def test_bad_directory_save() -> None:
-    old_dir = self.dir
-    self.dir = r'./#@^&$%*^(&//!~/'
+    old_dir = self.get_dir()
+
+    assert self.set_dir(r'./#@^&$%*^(&//!~/') is False
+
+    mtoml.mtomlc._mutex.acquire()
+    mtoml.mtomlc._dir = r'./#@^&$%*^(&//!~/'
+    mtoml.mtomlc._mutex.release()
 
     assert self.save(r'testconf', force_overwrite=True) is False
     assert self.save_all(force_overwrite=True) is False
 
-    self.dir = old_dir
+    mtoml.mtomlc._mutex.acquire()
+    mtoml.mtomlc._dir = old_dir
+    mtoml.mtomlc._mutex.release()
