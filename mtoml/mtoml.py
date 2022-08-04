@@ -282,6 +282,9 @@ def set(filename: str, field: str, value: Any) -> bool:
 #                                                                     #
 #######################################################################
 class mtomlc:
+    ###################################################################
+    #     CLASS VARIABLES                                             #
+    ###################################################################
     _files: list = []  # { 'filename': str, 'unsaved_changes': bool, 'data': dict }
     _dir: str = r'./'
     _mutex: Type[Lock] = Lock()
