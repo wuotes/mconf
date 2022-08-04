@@ -8,4 +8,4 @@
 
 __all__ = (r'set', r'get', r'save_all', r'save', r'is_loaded', r'load', r'set_dir', r'get_dir', r'mtomlc')
 
-from .mtomlc import (mtomlc, get_dir, set_dir, load, is_loaded, save, save_all, get, set)
+from .mtoml import (mtomlc, get_dir, set_dir, load, is_loaded, save, save_all, get, set)
