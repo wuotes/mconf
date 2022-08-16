@@ -81,10 +81,26 @@ def test_fake_get_bool() -> None:
 def test_get_fake() -> None:
     assert self.get(r'testconf', r'fakeval') is None
 
+def test_group_set_bool() -> None:
+    assert self.set_to_group(r'testconf', r'testgroup', r'testval', True) is True
+
+def test_group_get_bool() -> None:
+    assert self.get_from_group(r'testconf', r'testgroup', r'testval') is True
+
+def test_fake_group_set_bool() -> None:
+    assert self.set_to_group(r'fakeconf', r'testgroup', r'testval', True) is False
+
+def test_fake_group_get_bool() -> None:
+    assert self.get_from_group(r'fakeconf', r'testgroup', r'testval') is None
+
+def test_group_get_fake() -> None:
+    assert self.get_from_group(r'testconf', r'testgroup', r'fakeval') is None
+
 def test_verify_save_load_get_bool() -> None:
     assert self.save(r'testconf') is True
     assert self.load(r'testconf', force_reload=True) is True
     assert self.get(r'testconf', r'testval') is True
+    assert self.get_from_group(r'testconf', r'testgroup', r'testval') is True
 
 def test_verify_save_load_get_str() -> None:
     assert self.set(r'testconf', r'testval', r'test') is True

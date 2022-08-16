@@ -242,6 +242,27 @@ def get(filename: str, field: str) -> Any:
     return None
 
 #######################################################################
+#     GET_FROM_GROUP                                                  #
+#######################################################################
+def get_from_group(filename: str, group: str, field: str) -> Any:
+    mtomlc._mutex.acquire()
+
+    for file in mtomlc._files:
+        if filename.lower() == str(file[r'filename']):
+            if group in file[r'data'].keys():
+                if type(file[r'data'][group]) is dict:
+                    if field in file[r'data'][group].keys():
+                        value = file[r'data'][group][field]
+
+                        mtomlc._mutex.release()
+
+                        return value
+
+    mtomlc._mutex.release()
+
+    return None
+
+#######################################################################
 #     SET                                                             #
 #######################################################################
 def set(filename: str, field: str, value: Any) -> bool:
@@ -265,6 +286,45 @@ def set(filename: str, field: str, value: Any) -> bool:
                 is_valid_toml = False
 
                 print('[{0}] The configuration \'{1}\' and field \'{2}\' attempted value set resulted in an invalid TOML format: {3}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, field, str(toml_exception)), file=stderr)
+
+            mtomlc._mutex.release()
+
+            return is_valid_toml
+
+    mtomlc._mutex.release()
+
+    print('[{0}] The configuration \'{1}\' does not exist.'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename), file=stderr)
+
+    return False
+
+#######################################################################
+#     SET_TO_GROUP                                                    #
+#######################################################################
+def set_to_group(filename: str, group: str, field: str, value: Any) -> bool:
+    is_valid_toml: bool = True
+
+    mtomlc._mutex.acquire()
+
+    for file in mtomlc._files:
+        if filename.lower() == str(file[r'filename']):
+            try:
+                toml_copy = copy.deepcopy(file[r'data'])
+
+                if group not in toml_copy.keys():
+                    toml_copy[group] = {}
+                    
+                toml_copy[group][field] = value
+
+                # this will throw an exception if the modifications resulted in an invalid toml format
+                tomli.loads(tomli_w.dumps(toml_copy))
+
+                file[r'unsaved_changes'] = True
+                file[r'data'] = toml_copy
+
+            except Exception as toml_exception:
+                is_valid_toml = False
+
+                print('[{0}] The configuration \'{1}\', group \'{3}\', and field \'{2}\' attempted group value set resulted in an invalid TOML format: {4}'.format(datetime.now().strftime('%m/%d %I:%M %p'), filename, field, group, str(toml_exception)), file=stderr)
 
             mtomlc._mutex.release()
 
@@ -339,7 +399,19 @@ class mtomlc:
         return get(filename, field)
 
     ###################################################################
+    #     GET_FROM_GROUP                                              #
+    ###################################################################
+    def get_from_group(self: r'mtomlc', filename: str, group: str, field: str) -> Any:
+        return get_from_group(filename, group, field)
+
+    ###################################################################
     #     SET                                                         #
     ###################################################################
     def set(self: r'mtomlc', filename: str, field: str, value: Any) -> bool:
         return set(filename, field, value)
+
+    ###################################################################
+    #     SET_TO_GROUP                                                #
+    ###################################################################
+    def set_to_group(self: r'mtomlc', filename: str, group: str, field: str, value: Any) -> bool:
+        return set_to_group(filename, group, field, value)
