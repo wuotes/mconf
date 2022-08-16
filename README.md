@@ -15,25 +15,25 @@ class pets(mtoml.mtomlc):
         # set the relative path to the config directory
         # if not specified, defaults to the current directory
         # unless a directory was set prior to this class init
-        mtoml.mtomlc.__init__('.\PATH_TO_CONFIGS\')
+        mtoml.mtomlc.__init__(directory = '.\PATH_TO_CONFIGS\')
 
         # mtomlc does not need to be inherited and may be an instance var
-        self.conf = mtoml.mtomlc('\PATH_TO_CONFIGS\')
+        self.conf = mtoml.mtomlc(directory = '\PATH_TO_CONFIGS\')
 
         # mtoml methods may be accessed through any instance
-        self.conf.set_dir('\PATH_TO_CONFIGS\')
-        self.set_dir('.\PATH_TO_CONFIGS\')
+        self.conf.set_dir(directory = '\PATH_TO_CONFIGS\')
+        self.set_dir(directory = '.\PATH_TO_CONFIGS\')
 
         # or directly through the module itself
-        mtoml.set_dir('.\PATH_TO_CONFIGS\')
+        mtoml.set_dir(directory = '.\PATH_TO_CONFIGS\')
 
         # all instances share the same files
-        if mtoml.is_loaded('dogs') is False:
+        if mtoml.is_loaded(config = 'dogs') is False:
             # load a toml config named "dogs.toml"
-            if mtoml.load('dogs') is False:
+            if mtoml.load(config = 'dogs') is False:
                 # if something goes wrong mtoml won't throw exceptions
                 # and instead returns either None or False
-                print('Unable to load config "dogs"!', file=stderr)
+                print('Unable to load config "dogs"!', file = stderr)
 
     def __del__(self):
         # not a good idea to put this here in practice
@@ -42,21 +42,24 @@ class pets(mtoml.mtomlc):
 
         # where as this is would force a full write
         # to save eveything even if nothing changed
-        mtoml.save_all(force_overwrite=True)
+        mtoml.save_all(force_overwrite = True)
 
     def add_dog_breed(self, breed):
         # get the current list of dog breeds that we are
         # assuming is a list in this case
-        breeds = mtoml.get('dogs', 'breeds')
+        breeds = mtoml.get(config = 'dogs', field = 'breeds')
         breeds.append(breed)
 
-        # update the config with our new list
-        mtoml.set('dogs', 'breeds', breeds)
+        # if the field is part of a group, simply specify the group
+        breed_info = mtoml.get(config = 'dogs', group = 'breeds', field = breed)
 
-        # any attempt to call get('dogs', 'breeds')
+        # update the config with our new list
+        mtoml.set(config = 'dogs', field = 'breeds', value = breeds)
+
+        # any attempt to call get(config = 'dogs', field = 'breeds')
         # will return our updated list but those updates
         # haven't been saved yet, we need explicitly save
-        mtoml.save('dogs')
+        mtoml.save(config = 'dogs')
 
         # now even if another app wants to access
         # our toml config about dogs it will show
